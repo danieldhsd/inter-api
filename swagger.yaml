@@ -1,0 +1,256 @@
+swagger: "2.0"
+info:
+  description: "API para teste do Banco Inter."
+  version: "1.0.0"
+  title: "Banco Inter Teste API"
+  contact:
+    email: "danieldhsd@gmail.com"
+host: "localhost"
+tags:
+- name: "usuario"
+  description: "CRUD de usuários"
+- name: "digitoUnico"
+  description: "Calculos de digito único"
+schemes:
+- "http"
+paths:
+  /usuarios:
+    post:
+      tags:
+      - "usuario"
+      summary: "Adicione um novo usuário"
+      description: "Adicione um novo usuário"
+      operationId: "addUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Objeto usuário que precisa ser adicionado."
+        required: true
+        schema:
+          $ref: "#/definitions/Usuario"
+      responses:
+        "200":
+          description: "Ok"
+        "405":
+          description: "Invalid input"
+    get:
+      tags:
+      - "usuario"
+      summary: "Buscar todos os usuários"
+      description: "Buscas todos os usuarios cadastrados"
+      operationId: "findAllUsers"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Usuario"
+        "400":
+          description: "Invalid status value"
+  /usuarios/{id}:
+    put:
+      tags:
+      - "usuario"
+      summary: "Atualiza um usuário existente"
+      description: ""
+      operationId: "updateUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID do usuário para ser atualizado"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Objeto usuário que precisa ser atualizado."
+        required: true
+        schema:
+          $ref: "#/definitions/Usuario"
+      responses:
+        "200":
+          description: "Ok"
+        "400":
+          description: "ID inválido"
+        "404":
+          description: "Usuário não encontrado"
+    get:
+      tags:
+      - "usuario"
+      summary: "Buscar por id"
+      description: "Busca usuário por id."
+      operationId: "findUserById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID do usuário para ser recuperado"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Usuario"
+        "400":
+          description: "Invalid tag value"
+    delete:
+      tags:
+      - "usuario"
+      summary: "Apagar um usuário"
+      description: "Apagar um usuário"
+      operationId: "deleteUserById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id do usuário para ser excluído"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "User not found"
+    patch:
+      tags:
+      - "usuario"
+      summary: "Atualizar a chave pública de um usuário"
+      description: "Atualizar a chave publica de um usuário"
+      operationId: "updatePublicKeyUser"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID usuário que vai ser atualizado"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "chavePublicaCriptografia"
+        in: "formData"
+        description: "Chave pública do usuário"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Ok"
+        "405":
+          description: "Invalid input"
+  /digito/usuario/{id}:
+    get:
+      tags:
+      - "digitoUnico"
+      summary: "Retorna todos digitos únicos de um usuário"
+      description: "Retorna todos digitos únicos de um usuário"
+      operationId: "getDigitoUnicoByUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID usuário que vai procurar os digitos únicos"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DigitoUnico"
+  /digito:
+    post:
+      tags:
+      - "digitoUnico"
+      summary: "Calcula o digito único de uma entrada."
+      description: "Calcula o digito único de uma entrada."
+      operationId: "placeOrder"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Entradas do que vão ser calculadas."
+        required: true
+        schema:
+          $ref: "#/definitions/DigitoUnico"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/DigitoUnico"
+        "400":
+          description: "Entradas inválidas"
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Usuario:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      nome:
+        type: "string"
+      email:
+        type: "string"
+      chavePublicaCriptografia:
+        type: "string"
+      resultados:
+        type: "array"
+        items:
+          $ref: "#/definitions/DigitoUnico"
+    xml:
+      name: "Usuario"
+  DigitoUnico:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      entrada:
+        type: "string"
+      multiplicador:
+        type: "integer"
+        format: "int64"
+      resultado:
+        type: "integer"
+        format: "int64"
+      usuario:
+        type: "object"
+        items:
+          $ref: '#/definitions/Usuario'
+    xml:
+      name: "DigitoUnico"
